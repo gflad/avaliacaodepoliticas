@@ -2,6 +2,7 @@ library(tidyverse)
 library(broom)
 library(rdd)
 library(rddensity)
+library(rddtools)
 
 #a
 
@@ -124,4 +125,50 @@ summary(denstest)
 # It needs the density test object we just made
 rdplotdensity(denstest, ptrf$matriculas.totais.ens.fund.2005)
 
+# passo 2.4: Look at the treatment effect on important predetermined covariates 
+# and, if available, placebo outcomes.
 
+lm_rdd_nonoutcome = rdd::RDestimate(sal.med.nom.total.seade.2002 ~ matriculas.totais.ens.fund.2005, ptrf,
+                                    cutpoint = 800)
+summary(lm_rdd_nonoutcome)
+
+# passo 3: After successful falsification, analyze the outcome of interest, 
+# both graphically via an RD plot and formally with appropriate 
+# estimation and inference methods.
+
+# estimacao linear nao parametrica, recomendado por Skovron e Titiunik
+# notas de matematica:
+ptrf2 = rdd_data(y = mat.4.s.p.bra.2007,
+                 x = matriculas.totais.ens.fund.2005,
+                 data = ptrf,
+                 cutpoint = 800)
+
+npll_mat = rdd_reg_np(ptrf2)
+npll_mat
+
+# notas de portugues:
+ptrf2 = rdd_data(y = port.4.s.p.bra.2007,
+                 x = matriculas.totais.ens.fund.2005,
+                 data = ptrf,
+                 cutpoint = 800)
+
+npll_port = rdd_reg_np(ptrf2)
+npll_port
+
+# variacao notas de matematica:
+ptrf2 = rdd_data(y = variacao.4.s.pb.mat,
+                 x = matriculas.totais.ens.fund.2005,
+                 data = ptrf,
+                 cutpoint = 800)
+
+npll_var_mat = rdd_reg_np(ptrf2)
+npll_var_mat
+
+# variacao notas de portugues:
+ptrf2 = rdd_data(y = variacao.4.s.pb.port,
+                 x = matriculas.totais.ens.fund.2005,
+                 data = ptrf,
+                 cutpoint = 800)
+
+npll_var_port = rdd_reg_np(ptrf2)
+npll_var_port
